@@ -33,17 +33,14 @@ router.post('/process-signup', (req, res, next) => {
       const hashPass = bcryptjs.hashSync(req.body.signupPassword, salt);
 
       const theUser = new UserModel({
-        userName: req.body.signupUsername,
-        encryptedPassword: hashPass
+        username: req.body.signupUsername,
+        password: hashPass
       });
+
       theUser.save((err) => {
-				console.log("encryptedPassword", theUser.encryptedPassword)
-				console.log("req body pass", req.body.signupPassword)
         if (err) {
           console.log("User save error: ", err)
-          res.status(500).json({
-            errorMessage: "Error saving user."
-          });
+          res.status(500).json({errorMessage: "Error saving user."});
           return;
         }
 
@@ -66,9 +63,8 @@ router.post('/process-signup', (req, res, next) => {
 router.post("/process-login", (req, res, next) => {
   const customAuthCallback = passport.authenticate(("local"), (err, theUser, extraInfo) => {
     if (err) {
-      res.status(500).json({
-        errorMesage: "login failed sorry"
-      });
+			console.log(err, theUser, extraInfo);
+      res.status(500).json({errorMesage: "login failed sorry"});
       return;
     }
     if (!theUser) {
@@ -85,7 +81,7 @@ router.post("/process-login", (req, res, next) => {
       }
 
       //clear out the password for security
-      theUser.encryptedPassword = undefined;
+      theUser.password = undefined;
       res.status(200).json(theUser);
 
     });

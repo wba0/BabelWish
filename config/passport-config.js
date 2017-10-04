@@ -28,7 +28,7 @@ passport.use(
 			passwordField: 'loginPassword'
 		},
 		(sentUsername, sentPassword, done) => {
-			UserMode.findOne(
+			UserModel.findOne(
 				{ username: sentUsername },
 				(err, userFromDb) => {
 					if(err){
@@ -40,7 +40,7 @@ passport.use(
 						return;
 					}
 					const isPasswordGood =
-					bcryptjs.compareSync(sentPassword, userFromDb.encryptedPassword);
+					bcryptjs.compareSync(sentPassword, userFromDb.password);
 					if(!isPasswordGood){
 						done(null, false, { message: "Wrong Password" });
 						return;
