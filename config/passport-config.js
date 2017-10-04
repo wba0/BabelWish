@@ -16,7 +16,7 @@ passport.deserializeUser((idFromSession, done) => {
 				done(err);
 				return;
 			}
-			done(null, userFromDb)l
+			done(null, userFromDb);
 		}
 	);
 });
@@ -51,4 +51,3 @@ passport.use(
 		}
 	)
 );
-)

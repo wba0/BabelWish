@@ -13,7 +13,7 @@ const session 		 = require('express-session');
 require("dotenv").config();
 require("./config/passport-config");
 
-mongoose.connect('process.env.MONGODB_URI');
+mongoose.connect(process.env.MONGODB_URI);
 
 const app = express();
 
@@ -38,7 +38,7 @@ app.use(
 		origin: ["http://localhost:4200"]
 	})
 );
-app.user(
+app.use(
 	session({
 		secret: "meow meow woof woof",
 		resave: true,

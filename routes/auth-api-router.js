@@ -4,7 +4,7 @@ const passport = require('passport');
 
 const UserModel = require('../models/user-model');
 
-const router = express.Router;
+const router = express.Router();
 
 router.post('/process-signup', (req, res, next) => {
   if (!req.body.signUpUsername || !req.body.signUpPassword) {
@@ -108,3 +108,5 @@ router.get("/checklogin", (req, res, next) => {
     userInfo: req.user
   });
 });
+
+module.exports = router
