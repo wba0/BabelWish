@@ -53,9 +53,15 @@ const myAuthRoutes = require("./routes/auth-api-router");
 app.use("/api", myAuthRoutes);
 // routes end
 
-app.use((req, res, next)=>{
-	res.sendFile(__dirname + "/public/index.html");
-});
+//this is for deployment only
+
+
+// app.use((req, res, next)=>{
+// 	res.sendFile(__dirname + "/public/index.html");
+// });
+
+
+
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
