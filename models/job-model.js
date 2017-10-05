@@ -29,7 +29,7 @@ const jobSchema = new Schema(
 		beneficiaryId:{
 			type: Schema.Types.ObjectId,
 			ref: "Beneficiary"
-		}
+		},
 		wordCount:{
 			type: Number,
 			required: false
