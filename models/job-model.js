@@ -14,6 +14,10 @@ const jobSchema = new Schema(
 			ref: "User",
 			required: false
 		},
+		applicants: [{
+			user: Schema.Types.ObjectId,
+			beneficiaryId: Schema.Types.ObjectId
+			}],
 		sourceLanguage:{
 			type: String,
 			required: true
@@ -21,10 +25,6 @@ const jobSchema = new Schema(
 		targetLanguage:{
 			type: String,
 			required: true
-		},
-		beneficiaryName:{
-			type: String,
-			required: false
 		},
 		beneficiaryId:{
 			type: Schema.Types.ObjectId,
@@ -45,6 +45,10 @@ const jobSchema = new Schema(
 		undergoingWork:{
 			type: Boolean,
 			default: false
+		},
+		available:{
+			type: Boolean,
+			default: true
 		}
 	},
 	{
