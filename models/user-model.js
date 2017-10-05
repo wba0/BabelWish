@@ -24,7 +24,7 @@ const userSchema = new Schema(
 			required: false
 		},
 		certifications:{
-			type: Array
+			type: Array,
 			default: [],
 			required: false
 		},
@@ -40,7 +40,7 @@ const userSchema = new Schema(
 		finishedJobs:{
 			type: Array,
 			default: []
-		}
+		},
 		inProgressJobs:{
 			type: Array,
 			default: []

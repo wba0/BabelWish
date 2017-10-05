@@ -13,32 +13,32 @@ const jobSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "User",
 			required: false
-		}
+		},
 		sourceLanguage:{
 			type: String,
 			required: true
 		},
-		targetLanguage{
+		targetLanguage:{
 			type: String,
 			required: true
 		},
-		beneficiary{
+		beneficiary:{
 			type: String,
 			required: false
 		},
-		wordCount{
-			type: Number,
-			required: true
-		}
-		price{
+		wordCount:{
 			type: Number,
 			required: true
 		},
-		content{
+		price:{
+			type: Number,
+			required: true
+		},
+		content:{
 			type: String,
 			required: true
 		},
-		undergoingWork{
+		undergoingWork:{
 			type: Boolean,
 			default: false
 		}
@@ -48,6 +48,6 @@ const jobSchema = new Schema(
 	}
 );
 
-const JobModel = mongoose.model("Job", userSchema);
+const JobModel = mongoose.model("Job", jobSchema);
 
 module.exports = JobModel;

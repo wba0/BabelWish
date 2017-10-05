@@ -51,6 +51,8 @@ app.use(passport.session());
 // routes start
 const myAuthRoutes = require("./routes/auth-api-router");
 app.use("/api", myAuthRoutes);
+const myJobRoutes = require('./routes/job-router');
+app.use("/api", myJobRoutes);
 // routes end
 
 //this is for deployment only

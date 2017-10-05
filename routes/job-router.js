@@ -41,7 +41,7 @@ router.post("/jobs", (req, res, next) => {
 			return;
 		}
 		if(err){
-			console.log("Error posting job, " err);
+			console.log("Error posting job: ", err);
 			res.status(500).json({errorMessage: "Problem posting new job"});
 			return;
 		}
@@ -68,7 +68,7 @@ router.put("/jobs/:jobId", (req, res, next) => {
 		req.params.jobId,
 		(err, jobFromDb) => {
 			if(err){
-				console.log("Phone details error, " err);
+				console.log("Phone details error: ", err);
 				res.status(500).json({errorMesage: "Job details went wrong"});
 				return;
 			}
@@ -146,7 +146,6 @@ router.get("/myjobs", (req, res, next) => {
 			}
 			res.status(200).json(foundJobs);
 		});
-
 });
 
 module.exports = router
