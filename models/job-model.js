@@ -22,17 +22,21 @@ const jobSchema = new Schema(
 			type: String,
 			required: true
 		},
-		beneficiary:{
+		beneficiaryName:{
 			type: String,
 			required: false
 		},
+		beneficiaryId:{
+			type: Schema.Types.ObjectId,
+			ref: "Beneficiary"
+		}
 		wordCount:{
 			type: Number,
-			required: true
+			required: false
 		},
 		price:{
 			type: Number,
-			required: true
+			required: false
 		},
 		content:{
 			type: String,
