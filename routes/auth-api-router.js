@@ -82,6 +82,7 @@ router.post("/process-login", (req, res, next) => {
 
       //clear out the password for security
       theUser.password = undefined;
+			console.log("process login route", req.user)
       res.status(200).json(theUser);
 
     });

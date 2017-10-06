@@ -48,6 +48,15 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+	if(req.user){
+		res.locals.user = req.user;
+	} else {
+		res.locals.user = null;
+	}
+	next();
+});
+
 // routes start
 const myAuthRoutes = require("./routes/auth-api-router");
 app.use("/api", myAuthRoutes);
