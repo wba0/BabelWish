@@ -21,6 +21,7 @@ router.get("/jobs", (req, res, next) => {
       res.status(200).json(allJobs);
     });
 });
+
 // post job
 router.post("/jobs", (req, res, next) => {
   if (!req.user) {
@@ -64,9 +65,18 @@ router.post("/jobs/apply/:jobId/", (req, res, next) => {
     });
     return;
   }
-  JobModel.findById(
-    req.params.jobId,
+
+  JobModel.findById(req.params.jobId)
+    .populate("owner")
+    .populate("applicants")
+    .exec(
     (err, jobFromDb) => {
+      //cant apply to your own jobs
+      if(req.user._id.toString() === jobFromDb.owner.toString()){
+        console.log("You cannot apply to your own jobs")
+        res.status(403).json({errorMessage: "You cannot apply to your own jobs"});
+        return;
+      }
       if (err) {
         console.log("Job application error ", err);
         res.status(500).json({
@@ -101,7 +111,7 @@ router.patch("/jobs/:jobId/:applicantId/:decision", (req, res, next) => {
   JobModel.findById(
     req.params.jobId,
     (err, jobFromDb) => {
-      if (err) {
+        if (err) {
         console.log("Job patch error: ", err);
         res.status(500).json({
           errorMessage: "Job update went wrong."
@@ -206,18 +216,17 @@ router.delete("/jobs/:jobId", (req, res, next) => {
 });
 
 //get my jobs
-router.get("/myjobs", (req, res, next) => {
+router.get("/myownedjobs", (req, res, next) => {
   if (!req.user) {
     res.status(401).json({
       errorMessage: "You are not logged in"
     });
     return;
   }
-  console.log(req.user._id)
-  JobModel.find({
-      owner: req.user._id
-    },
-    (err, foundJobs) => {
+  JobModel.find({owner: req.user._id})
+  .populate("applicants")
+  .populate("owner")
+  .exec((err, foundJobs) => {
       if (err) {
         res.status(500).json({
           errorMessage: "My jobs went wrong"
