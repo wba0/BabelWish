@@ -1,6 +1,7 @@
 const express = require('express');
 
 const JobModel = require('../models/job-model');
+const BeneficiaryModel = require('../models/beneficiary-model');
 
 const router = express.Router();
 
@@ -70,40 +71,42 @@ router.post("/jobs/apply/:jobId/", (req, res, next) => {
     .populate("owner")
     .populate("applicants")
     .exec(
-    (err, jobFromDb) => {
-      //cant apply to your own jobs
-      if(req.user._id.toString() === jobFromDb.owner.toString()){
-        console.log("You cannot apply to your own jobs")
-        res.status(403).json({errorMessage: "You cannot apply to your own jobs"});
-        return;
-      }
-      if (err) {
-        console.log("Job application error ", err);
-        res.status(500).json({
-          errorMessage: "Job application went wrong"
-        });
-        return;
-      }
-      jobFromDb.applicants.push(req.user._id);
-      jobFromDb.save((err) => {
-        if (jobFromDb.errors) {
-          res.status(400).json({
-            errorMessage: "Application validation failed",
-            validationErrors: jobFromDb.errors
+      (err, jobFromDb) => {
+        //cant apply to your own jobs
+        if (req.user._id.toString() === jobFromDb.owner.toString()) {
+          console.log("You cannot apply to your own jobs")
+          res.status(403).json({
+            errorMessage: "You cannot apply to your own jobs"
           });
           return;
         }
         if (err) {
-          console.log("Job update error: ", err);
+          console.log("Job application error ", err);
           res.status(500).json({
             errorMessage: "Job application went wrong"
           });
           return;
         }
-        res.status(200).json(jobFromDb);
-      });
-    }
-  );
+        jobFromDb.applicants.push(req.user._id);
+        jobFromDb.save((err) => {
+          if (jobFromDb.errors) {
+            res.status(400).json({
+              errorMessage: "Application validation failed",
+              validationErrors: jobFromDb.errors
+            });
+            return;
+          }
+          if (err) {
+            console.log("Job update error: ", err);
+            res.status(500).json({
+              errorMessage: "Job application went wrong"
+            });
+            return;
+          }
+          res.status(200).json(jobFromDb);
+        });
+      }
+    );
 });
 
 //2&3: accept/reject application
@@ -111,7 +114,7 @@ router.patch("/jobs/:jobId/:applicantId/:decision", (req, res, next) => {
   JobModel.findById(
     req.params.jobId,
     (err, jobFromDb) => {
-        if (err) {
+      if (err) {
         console.log("Job patch error: ", err);
         res.status(500).json({
           errorMessage: "Job update went wrong."
@@ -121,7 +124,6 @@ router.patch("/jobs/:jobId/:applicantId/:decision", (req, res, next) => {
       if (req.params.decision === "accept") {
         jobFromDb.set({
           applicants: [],
-          available: false,
           undergoingWork: true,
           worker: req.params.applicantId
         });
@@ -132,8 +134,8 @@ router.patch("/jobs/:jobId/:applicantId/:decision", (req, res, next) => {
           jobFromDb.applicants.splice(indexOfReject, 1);
         };
         jobFromDb.set({
-					//necessary?
-					available: true
+          //necessary?
+          undergoingWork: false
         });
       }
       jobFromDb.save((err) => {
@@ -148,6 +150,131 @@ router.patch("/jobs/:jobId/:applicantId/:decision", (req, res, next) => {
           console.log("Job update error: ", err);
           res.status(500).json({
             errorMessage: "Job update went wrong"
+          });
+          return;
+        }
+        res.status(200).json(jobFromDb);
+      });
+    }
+  )
+});
+
+//4: Job submitted
+router.patch("/submitJob/:jobId", (req, res, next) => {
+  JobModel.findById(
+    req.params.jobId,
+    (err, jobFromDb) => {
+      if (err) {
+        console.log("Job patch error: ", err);
+        res.status(500).json({
+          errorMessage: "Job submission went wrong."
+        });
+        return;
+      }
+      jobFromDb.set({
+        translatedContent: req.body.translation,
+        beneficiaryId: req.body.beneficiary
+      });
+
+      jobFromDb.save((err) => {
+        if (jobFromDb.errors) {
+          res.status(400).json({
+            errorMessage: "Save submit job failed",
+            validationErrors: jobFromDb.errors
+          });
+          return;
+        }
+        if (err) {
+          console.log("Job update error: ", err);
+          res.status(500).json({
+            errorMessage: "Job submission went wrong"
+          });
+          return;
+        }
+        res.status(200).json(jobFromDb);
+      });
+    }
+  )
+});
+//5&6: Job approved/rejected
+router.patch("/submittedJob/:jobId/:decision", (req, res, next) => {
+  JobModel.findById(
+    req.params.jobId,
+    (err, jobFromDb) => {
+      if (err) {
+        console.log("Job approval error: ", err);
+        res.status(500).json({
+          errorMessage: "Job approval went wrong."
+        });
+        return;
+      }
+      if (req.params.decision === "accept") {
+        jobFromDb.set({
+          undergoingWork: false,
+          finishedNotPaid: true
+        });
+      }
+      if (req.params.decision === "reject") {
+        jobFromDb.set({
+          undergoingWork: true
+        });
+      }
+      jobFromDb.set({
+        translatedContent: req.body.translation,
+        beneficiaryId: req.body.beneficiary
+      });
+
+      jobFromDb.save((err) => {
+        if (jobFromDb.errors) {
+          res.status(400).json({
+            errorMessage: "Save submit job failed",
+            validationErrors: jobFromDb.errors
+          });
+          return;
+        }
+        if (err) {
+          console.log("Job update error: ", err);
+          res.status(500).json({
+            errorMessage: "Job submission went wrong"
+          });
+          return;
+        }
+        res.status(200).json(jobFromDb);
+      });
+    }
+  )
+});
+
+
+//7:pay and complete job
+router.patch("/payandcompletejob/:jobId", (req, res, next) => {
+  JobModel.findById(
+    req.params.jobId,
+    (err, jobFromDb) => {
+      if (err) {
+        console.log("Job pay/complete error: ", err);
+        res.status(500).json({
+          errorMessage: "Job pay/complete went wrong."
+        });
+        return;
+      }
+      jobFromDb.set({
+        finishedNotPaid: false,
+        finishedAndPaid: true
+      });
+
+      jobFromDb.save((err) => {
+        if (jobFromDb.errors) {
+          res.status(400).json({
+            errorMessage: "Save pay/complete job failed",
+            validationErrors: jobFromDb.errors
+          });
+          return;
+        }
+        if (err) {
+          console.log("Job update error: ", err);
+          res.status(500).json({
+            errorMessage: "Job pay/complete save went wrong"
           });
           return;
         }
@@ -215,7 +342,7 @@ router.delete("/jobs/:jobId", (req, res, next) => {
   );
 });
 
-//get my jobs
+//get my owned jobs
 router.get("/myownedjobs", (req, res, next) => {
   if (!req.user) {
     res.status(401).json({
@@ -223,10 +350,12 @@ router.get("/myownedjobs", (req, res, next) => {
     });
     return;
   }
-  JobModel.find({owner: req.user._id})
-  .populate("applicants")
-  .populate("owner")
-  .exec((err, foundJobs) => {
+  JobModel.find({
+      owner: req.user._id
+    })
+    .populate("applicants")
+    .populate("owner")
+    .exec((err, foundJobs) => {
       if (err) {
         res.status(500).json({
           errorMessage: "My jobs went wrong"
@@ -236,5 +365,116 @@ router.get("/myownedjobs", (req, res, next) => {
       res.status(200).json(foundJobs);
     });
 });
+//get my owned active jobs
+router.get("/myownedactivejobs", (req, res, next) => {
+  if (!req.user) {
+    res.status(401).json({
+      errorMessage: "You are not logged in"
+    });
+    return;
+  }
+  JobModel.find({
+      owner: req.user._id,
+      undergoingWork: true
+    })
+    .populate("beneficiaryId")
+    .exec((err, foundJobs) => {
+      if (err) {
+        res.status(500).json({
+          errorMessage: "My jobs went wrong"
+        });
+        return;
+      }
+      res.status(200).json(foundJobs);
+    });
+});
+//get my working jobs
+router.get("/myworkingjobs", (req, res, next) => {
+  if (!req.user) {
+    res.status(401).json({
+      errorMessage: "You are not logged in"
+    });
+    return;
+  }
+  JobModel.find({
+      worker: req.user._id
+    })
+    .populate("beneficiaryId")
+    .populate("owner")
+    .exec((err, foundJobs) => {
+      if (err) {
+        res.status(500).json({
+          errorMessage: "My jobs went wrong"
+        });
+        return;
+      }
+      res.status(200).json(foundJobs);
+    });
+});
+//get my jobs finished and awaiting payment
+router.get("/myawaitingpaymentjobs", (req, res, next) => {
+  if (!req.user) {
+    res.status(401).json({
+      errorMessage: "You are not logged in"
+    });
+    return;
+  }
+  JobModel.find({
+      $or: [{
+          owner: req.user_id
+        },
+        {
+          worker: req.user_id
+        },
+      ]
+    }, {
+      finishedNotPaid: true
+    })
+    .populate("beneficiaryId")
+    .populate("owner")
+    .populate("worker")
+    .exec((err, foundJobs) => {
+      if (err) {
+        res.status(500).json({
+          errorMessage: "My jobs went wrong"
+        });
+        return;
+      }
+      res.status(200).json(foundJobs);
+    });
+});
+//get my jobs finished and awaiting payment
+router.get("/myfinishedandpaidjobs", (req, res, next) => {
+  if (!req.user) {
+    res.status(401).json({
+      errorMessage: "You are not logged in"
+    });
+    return;
+  }
+  JobModel.find({
+      $or: [{
+          owner: req.user_id
+        },
+        {
+          worker: req.user_id
+        },
+      ]
+    }, {
+      finishedAndPaid: true
+    })
+    .populate("beneficiaryId")
+    .populate("owner")
+    .populate("worker")
+    .exec((err, foundJobs) => {
+      if (err) {
+        res.status(500).json({
+          errorMessage: "My jobs went wrong"
+        });
+        return;
+      }
+      res.status(200).json(foundJobs);
+    });
+});
+
 
 module.exports = router

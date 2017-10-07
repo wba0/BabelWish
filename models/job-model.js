@@ -45,14 +45,21 @@ const jobSchema = new Schema({
     type: String,
     required: true
   },
+	translatedContent: {
+		type: String
+	},
   undergoingWork: {
     type: Boolean,
     default: false
   },
-  available: {
-    type: Boolean,
-    default: true
-  }
+	finishedNotPaid: {
+		type: Boolean,
+		default: false
+	},
+	finishedAndPaid: {
+		type: Boolean,
+		default: false
+	}
 }, {
   timestamps: true
 });
