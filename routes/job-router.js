@@ -420,16 +420,11 @@ router.get("/myawaitingpaymentjobs", (req, res, next) => {
     return;
   }
   JobModel.find({
-      $or: [{
-          owner: req.user_id
-        },
-        {
-          worker: req.user_id
-        },
-      ]
-    }, {
-      finishedNotPaid: true
-    })
+			$and: [
+				{$or: [{owner: req.user_id},{worker: req.user_id}]},
+				{finishedNotPaid: true}
+			]
+		})
     .populate("beneficiaryId")
     .populate("owner")
     .populate("worker")
