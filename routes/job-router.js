@@ -36,7 +36,7 @@ router.post("/jobs", (req, res, next) => {
     sourceLanguage: req.body.sourceLanguage,
     targetLanguage: req.body.targetLanguage,
     wordCount: req.body.wordCount,
-    price: req.body.wordCount,
+    price: req.body.price,
     content: req.body.content
   });
 
