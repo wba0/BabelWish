@@ -17,10 +17,6 @@ const jobSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User"
   }],
-  // applicants: {
-  // 	type: [Schema.Types.ObjectId],
-  // 	ref: "User"
-  // },
   sourceLanguage: {
     type: String,
     required: true
