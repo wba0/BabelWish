@@ -62,6 +62,8 @@ const myAuthRoutes = require("./routes/auth-api-router");
 app.use("/api", myAuthRoutes);
 const myJobRoutes = require('./routes/job-router');
 app.use("/api", myJobRoutes);
+const myBenefRoutes = require('./routes/beneficiary-router');
+app.use("/api", myBenefRoutes);
 // routes end
 
 //this is for deployment only
