@@ -11,6 +11,10 @@ router.get("/jobs", (req, res, next) => {
     .sort({
       _id: -1
     })
+		.populate("beneficiaryId")
+		.populate("owner")
+		.populate("worker")
+		.populate("applicants")
     .exec((err, allJobs) => {
       if (err) {
         console.log("Error finding jobs", err);
@@ -355,6 +359,7 @@ router.get("/myownedjobs", (req, res, next) => {
     })
     .populate("applicants")
     .populate("owner")
+		.populate("worker")
     .exec((err, foundJobs) => {
       if (err) {
         res.status(500).json({

@@ -25,6 +25,12 @@ const jobSchema = new Schema({
     type: String,
     required: true
   },
+  sourceLanguageIsoCode: {
+    type: String
+	  },
+  targetLanguageIsoCode: {
+    type: String
+	  },
   beneficiaryId: {
     type: Schema.Types.ObjectId,
     ref: "Beneficiary"
