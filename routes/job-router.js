@@ -175,9 +175,12 @@ router.patch("/submitJob/:jobId", (req, res, next) => {
         });
         return;
       }
+			console.log(req.body);
+			console.log(req.body.translatedContent);
+			console.log(req.body.beneficiaryId);
       jobFromDb.set({
-        translatedContent: req.body.translation,
-        beneficiaryId: req.body.beneficiary
+        translatedContent: req.body.translatedContent,
+        beneficiaryId: req.body.beneficiaryId
       });
 
       jobFromDb.save((err) => {
