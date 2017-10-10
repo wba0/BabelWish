@@ -179,6 +179,8 @@ router.patch("/submitJob/:jobId", (req, res, next) => {
 			console.log(req.body.translatedContent);
 			console.log(req.body.beneficiaryId);
       jobFromDb.set({
+				undergoingWork: false,
+				finishedNotPaid: true,
         translatedContent: req.body.translatedContent,
         beneficiaryId: req.body.beneficiaryId
       });
@@ -209,9 +211,9 @@ router.patch("/submittedJob/:jobId/:decision", (req, res, next) => {
     req.params.jobId,
     (err, jobFromDb) => {
       if (err) {
-        console.log("Job approval error: ", err);
+        console.log("Job find approval error: ", err);
         res.status(500).json({
-          errorMessage: "Job approval went wrong."
+          errorMessage: "Job find approval went wrong."
         });
         return;
       }
@@ -220,16 +222,13 @@ router.patch("/submittedJob/:jobId/:decision", (req, res, next) => {
           undergoingWork: false,
           finishedNotPaid: true
         });
+				//go to payment
       }
       if (req.params.decision === "reject") {
         jobFromDb.set({
           undergoingWork: true
         });
       }
-      jobFromDb.set({
-        translatedContent: req.body.translation,
-        beneficiaryId: req.body.beneficiary
-      });
 
       jobFromDb.save((err) => {
         if (jobFromDb.errors) {
@@ -291,10 +290,14 @@ router.patch("/payandcompletejob/:jobId", (req, res, next) => {
   )
 });
 
+
+
 //get single job
 router.get("/jobs/:jobId", (req, res, next) => {
-  JobModel.findById(
-    req.params.jobId,
+  JobModel.findById(req.params.jobId)
+		.populate("owner")
+		.populate("worker")
+		.exec(
     (err, jobFromDb) => {
       if (err) {
         console.log("Job details error ", err);
@@ -431,10 +434,12 @@ router.get("/myawaitingpaymentjobs", (req, res, next) => {
     return;
   }
   JobModel.find({
-			$and: [
-				{$or: [{owner: req.user_id},{worker: req.user_id}]},
-				{finishedNotPaid: true}
-			]
+			// $and: [
+			// 	{$or: [{owner: req.user_id},{worker: req.user_id}]},
+			// 	{finishedNotPaid: true}
+			// ]
+			finishedNotPaid: true
+
 		})
     .populate("beneficiaryId")
     .populate("owner")
