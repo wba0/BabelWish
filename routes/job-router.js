@@ -392,6 +392,8 @@ router.get("/myownedactivejobs", (req, res, next) => {
       undergoingWork: true
     })
     .populate("beneficiaryId")
+    .populate("owner")
+    .populate("worker")
     .exec((err, foundJobs) => {
       if (err) {
         res.status(500).json({
@@ -415,6 +417,7 @@ router.get("/myworkingjobs", (req, res, next) => {
     })
     .populate("beneficiaryId")
     .populate("owner")
+		.populate("worker")
     .exec((err, foundJobs) => {
       if (err) {
         res.status(500).json({
