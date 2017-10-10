@@ -34,7 +34,12 @@ const beneficiarySchema = new Schema({
   },
   photoUrlArr: [{
     type: String
-  }]
+  }],
+	payPalAddress: {
+		type: String,
+		required: true
+	}
+
 
 }, {
   timestamps: true

@@ -454,7 +454,7 @@ router.get("/myawaitingpaymentjobs", (req, res, next) => {
       res.status(200).json(foundJobs);
     });
 });
-//get my jobs finished and awaiting payment
+//get my finished jobs
 router.get("/myfinishedandpaidjobs", (req, res, next) => {
   if (!req.user) {
     res.status(401).json({
@@ -463,14 +463,7 @@ router.get("/myfinishedandpaidjobs", (req, res, next) => {
     return;
   }
   JobModel.find({
-      $or: [{
-          owner: req.user_id
-        },
-        {
-          worker: req.user_id
-        },
-      ]
-    }, {
+
       finishedAndPaid: true
     })
     .populate("beneficiaryId")
