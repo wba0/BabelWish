@@ -77,7 +77,7 @@ router.post("/jobs/apply/:jobId/", (req, res, next) => {
     .exec(
       (err, jobFromDb) => {
         //cant apply to your own jobs
-        if (req.user._id.toString() === jobFromDb.owner.toString()) {
+        if (req.user._id.toString() === jobFromDb.owner._id.toString()) {
           console.log("You cannot apply to your own jobs")
           res.status(403).json({
             errorMessage: "You cannot apply to your own jobs"
@@ -101,7 +101,7 @@ router.post("/jobs/apply/:jobId/", (req, res, next) => {
             return;
           }
           if (err) {
-            console.log("Job update error: ", err);
+            console.log("Job application error: ", err);
             res.status(500).json({
               errorMessage: "Job application went wrong"
             });
@@ -358,7 +358,10 @@ router.get("/myownedjobs", (req, res, next) => {
     return;
   }
   JobModel.find({
-      owner: req.user._id
+      owner: req.user._id,
+			undergoingWork: false,
+			finishedNotPaid: false,
+			finishedAndPaid: false
     })
     .populate("applicants")
     .populate("owner")
