@@ -61,6 +61,9 @@ const jobSchema = new Schema({
 	finishedAndPaid: {
 		type: Boolean,
 		default: false
+	},
+	paypalPaymentId: {
+		type: String
 	}
 }, {
   timestamps: true
