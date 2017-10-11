@@ -133,8 +133,8 @@ router.patch("/jobs/:jobId/:applicantId/:decision", (req, res, next) => {
         });
       }
       if (req.params.decision === "reject") {
-        const indexOfReject = jobFromDb.applicants.indexOf(applicantId);
-        if (index > -1) {
+        const indexOfReject = jobFromDb.applicants.indexOf(req.params.applicantId);
+        if (indexOfReject > -1) {
           jobFromDb.applicants.splice(indexOfReject, 1);
         };
         jobFromDb.set({
@@ -211,9 +211,9 @@ router.patch("/submittedJob/:jobId/:decision", (req, res, next) => {
     req.params.jobId,
     (err, jobFromDb) => {
       if (err) {
-        console.log("Job find approval error: ", err);
+        console.log("Translation approval/rejection error: ", err);
         res.status(500).json({
-          errorMessage: "Job find approval went wrong."
+          errorMessage: "Translation approval/rejection went wrong."
         });
         return;
       }
@@ -226,7 +226,8 @@ router.patch("/submittedJob/:jobId/:decision", (req, res, next) => {
       }
       if (req.params.decision === "reject") {
         jobFromDb.set({
-          undergoingWork: true
+          undergoingWork: true,
+					finishedNotPaid: false
         });
       }
 
