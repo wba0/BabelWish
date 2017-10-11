@@ -66,6 +66,8 @@ const myBenefRoutes = require('./routes/beneficiary-router');
 app.use("/api", myBenefRoutes);
 const myUserRoutes = require('./routes/user-router');
 app.use("/api", myUserRoutes);
+const myPayPayRoutes = require('./routes/paypal-router');
+app.use("/api", myPayPayRoutes);
 // routes end
 
 //this is for deployment only
