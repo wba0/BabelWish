@@ -24,32 +24,18 @@ const userSchema = new Schema(
 			max: 5,
 			required: false
 		},
-		certifications:{
-			type: Array,
-			default: [],
-			required: false
-		},
-		motherTongues:{
-			type: Array,
-			default: [],
-			required: false
-		},
-		postedJobs:{
-			type: Array,
-			default: []
-		},
-		finishedJobs:{
-			type: Array,
-			default: []
-		},
-		inProgressJobs:{
-			type: Array,
-			default: []
-		},
-		submittedJobs:{
-			type: Array,
-			default: []
-		}
+		certifications:[{
+			name: String,
+			year: String
+		}],
+		languageSkills:[{
+			language: String,
+			proficiency: String
+		}],
+		jobs:[{
+	    type: Schema.Types.ObjectId,
+	    ref: "Job"
+	  }]
 	},
 	{
 		timestamps: true
