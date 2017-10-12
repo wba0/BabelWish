@@ -21,7 +21,6 @@ router.get("/users/:userId", (req, res, next) => {
 });
 
 router.patch("/users/addLanguageSkill", (req, res, next) => {
-console.log("req user langaiugeskills", req.user.languageSkills);
   req.user.languageSkills.push({
       language: req.body.language,
       proficiency: req.body.proficiency
@@ -38,32 +37,20 @@ console.log("req user langaiugeskills", req.user.languageSkills);
   res.status(200).json(req.user.languageSkills);
 });
 
-router.delete("/users/:userId/removeLanguageSkill", (req, res, next) => {
-  UserModel.findById(
-    req.params.userId,
-    (err, userFromDb) => {
-      if (err) {
-        console.log("Delete language skill error: ", err);
-        res.status(500).json({
-          errorMessage: "Delete language skill went wrong"
-        });
-        return;
-      }
-      //delete it
+router.delete("/users/removeLanguageSkill/:language", (req, res, next) => {
 
+			const deleteMatch = req.params.language.toLowerCase();
 
-      userFromDb.save((err) => {
-        if (userFromDb.errors) {
-          res.status(400).json({
-            errorMessage: "Delete language skill validation failed",
-            validationErrors: userFromDb.errors
-          });
+			req.user.update(
+				{ $pull: { languageSkills: { language: deleteMatch } } },
+				(err) => {
+        if (err) {
+          res.status(500).json({
+            errorMessage: "Delete language skill validation failed" });
           return;
         }
+				res.status(200).json(req.user);
       });
-      res.status(200).json(userFromDb);
-    }
-  );
 });
 
 
