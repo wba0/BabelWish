@@ -73,9 +73,9 @@ app.use("/api", myPayPayRoutes);
 //this is for deployment only
 
 
-// app.use((req, res, next)=>{
-// 	res.sendFile(__dirname + "/public/index.html");
-// });
+app.use((req, res, next)=>{
+	res.sendFile(__dirname + "/public/index.html");
+});
 
 
 
