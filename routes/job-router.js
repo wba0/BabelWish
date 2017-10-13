@@ -415,8 +415,8 @@ router.get("/myworkingjobs", (req, res, next) => {
   }
   JobModel.find({
       worker: req.user._id,
-			undergoingWork: false,
-			finishedNotPaid: true
+			undergoingWork: true,
+			finishedNotPaid: false
     })
     .populate("beneficiaryId")
     .populate("owner")
