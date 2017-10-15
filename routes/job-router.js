@@ -27,6 +27,29 @@ router.get("/jobs", (req, res, next) => {
     });
 });
 
+//get relevant jobs (logged in user is owner or worker)
+router.get("/jobs/relevantjobs", (req, res, next) => {
+	console.log("asidnawidniwadn")
+  JobModel.find(
+		{ $or: [ {owner: req.user._id}, {worker: req.user._id} ] }
+		)
+		.populate("beneficiaryId")
+		.populate("owner")
+		.populate("worker")
+		.populate("applicants")
+    .exec((err, foundJobs) => {
+      if (err) {
+        console.log("Error finding relevant jobs", err);
+        res.status(500).json({
+          errorMessage: "Finding relevant jobs went wrong"
+        });
+        return;
+      }
+			console.log(foundJobs)
+      res.status(200).json(foundJobs);
+    });
+});
+
 // post job
 router.post("/jobs", (req, res, next) => {
   if (!req.user) {
