@@ -29,7 +29,6 @@ router.get("/jobs", (req, res, next) => {
 
 //get relevant jobs (logged in user is owner or worker)
 router.get("/jobs/relevantjobs", (req, res, next) => {
-	console.log("asidnawidniwadn")
   JobModel.find(
 		{ $or: [ {owner: req.user._id}, {worker: req.user._id} ] }
 		)
@@ -45,7 +44,6 @@ router.get("/jobs/relevantjobs", (req, res, next) => {
         });
         return;
       }
-			console.log(foundJobs)
       res.status(200).json(foundJobs);
     });
 });
