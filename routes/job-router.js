@@ -227,7 +227,7 @@ router.patch("/submitJob/:jobId", (req, res, next) => {
   )
 });
 //5&6: Job approved/rejected
-router.patch("/submittedJob/:jobId/:decision", (req, res, next) => {
+router.patch("/submittedJob/:jobId/:decision/:rating", (req, res, next) => {
   JobModel.findById(
     req.params.jobId,
     (err, jobFromDb) => {
@@ -239,9 +239,11 @@ router.patch("/submittedJob/:jobId/:decision", (req, res, next) => {
         return;
       }
       if (req.params.decision === "accept") {
+				jobFromDb.push({ rating: req.params.rating });
         jobFromDb.set({
-          undergoingWork: false,
-          finishedNotPaid: true
+					//temporary until paypal is fixed
+          finishedNotPaid: false,
+					finishedAndPaid: true
         });
 				//go to payment
       }
