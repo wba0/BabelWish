@@ -17,13 +17,11 @@ const userSchema = new Schema(
 			required: false,
 			default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIoWE9ZmLDWEvA2R1St18oRyGK-d7OM9UAP9W0qiBtDOAW_rbB2A"
 		},
-		rating:{
+		rating:[{
 			type: Number,
-			default: 0,
 			min: 0,
-			max: 5,
-			required: false
-		},
+			max: 5
+		}],
 		certifications:[{
 			name: String,
 			year: String

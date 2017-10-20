@@ -234,12 +234,26 @@ router.patch("/submitJob/:jobId", (req, res, next) => {
 //5&6: Job approved/rejected
 router.patch("/submittedJob/:jobId/:decision/:workerId/:rating", (req, res, next) => {
   if (req.params.decision === "accept") {
-    setRating = req.params.rating;
     setFinishedNotPaid = false;
     setFinishedAndPaid = true;
+		UserModel.findByIdAndUpdate(
+			req.params.workerId, {
+			$push: {
+				rating: req.params.rating
+			}
+			},
+			(err, userFromDb) => {
+				if (err) {
+					console.log("User rating error: ", err);
+					res.status(500).json({
+						errorMessage: "User rating went wrong"
+					});
+					return;
+				}
+		}
+		);
   }
   if (req.params.decision === "reject") {
-    setRating = null;
     setUndergoingWork = true;
     setFinishedNotPaid = false;
   }
@@ -252,6 +266,7 @@ router.patch("/submittedJob/:jobId/:decision/:workerId/:rating", (req, res, next
       }
     },
     (err, jobFromDb) => {
+			console.log("found job from db: ", jobFromDb)
       if (err) {
         console.log("Translation approval/rejection error: ", err);
         res.status(500).json({
@@ -261,24 +276,7 @@ router.patch("/submittedJob/:jobId/:decision/:workerId/:rating", (req, res, next
       }
 	}
 	);
-	UserModel.findByIdAndUpdate(
-		req.params.workerId, {
-		$push: {
-			rating: setRating
-		}
-		},
-		(err, userFromDb) => {
-			console.log("pushed rating: ", setRating)
-			console.log("new user:  ", userFromDb)
-			if (err) {
-				console.log("User rating error: ", err);
-				res.status(500).json({
-					errorMessage: "User rating went wrong"
-				});
-				return;
-			}
-	}
-	);
+
 	res.status(200).json({userFromDb, jobFromDb});
 });
 
