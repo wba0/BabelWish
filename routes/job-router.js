@@ -1,6 +1,7 @@
 const express = require('express');
 
 const JobModel = require('../models/job-model');
+const UserModel = require('../models/user-model');
 const BeneficiaryModel = require('../models/beneficiary-model');
 
 const router = express.Router();
@@ -11,10 +12,10 @@ router.get("/jobs", (req, res, next) => {
     .sort({
       _id: -1
     })
-		.populate("beneficiaryId")
-		.populate("owner")
-		.populate("worker")
-		.populate("applicants")
+    .populate("beneficiaryId")
+    .populate("owner")
+    .populate("worker")
+    .populate("applicants")
     .exec((err, allJobs) => {
       if (err) {
         console.log("Error finding jobs", err);
@@ -29,13 +30,17 @@ router.get("/jobs", (req, res, next) => {
 
 //get relevant jobs (logged in user is owner or worker)
 router.get("/jobs/relevantjobs", (req, res, next) => {
-  JobModel.find(
-		{ $or: [ {owner: req.user._id}, {worker: req.user._id} ] }
-		)
-		.populate("beneficiaryId")
-		.populate("owner")
-		.populate("worker")
-		.populate("applicants")
+  JobModel.find({
+      $or: [{
+        owner: req.user._id
+      }, {
+        worker: req.user._id
+      }]
+    })
+    .populate("beneficiaryId")
+    .populate("owner")
+    .populate("worker")
+    .populate("applicants")
     .exec((err, foundJobs) => {
       if (err) {
         console.log("Error finding relevant jobs", err);
@@ -196,12 +201,12 @@ router.patch("/submitJob/:jobId", (req, res, next) => {
         });
         return;
       }
-			console.log(req.body);
-			console.log(req.body.translatedContent);
-			console.log(req.body.beneficiaryId);
+      console.log(req.body);
+      console.log(req.body.translatedContent);
+      console.log(req.body.beneficiaryId);
       jobFromDb.set({
-				undergoingWork: false,
-				finishedNotPaid: true,
+        undergoingWork: false,
+        finishedNotPaid: true,
         translatedContent: req.body.translatedContent,
         beneficiaryId: req.body.beneficiaryId
       });
@@ -227,9 +232,25 @@ router.patch("/submitJob/:jobId", (req, res, next) => {
   )
 });
 //5&6: Job approved/rejected
-router.patch("/submittedJob/:jobId/:decision/:rating", (req, res, next) => {
-  JobModel.findById(
-    req.params.jobId,
+router.patch("/submittedJob/:jobId/:decision/:workerId/:rating", (req, res, next) => {
+  if (req.params.decision === "accept") {
+    setRating = req.params.rating;
+    setFinishedNotPaid = false;
+    setFinishedAndPaid = true;
+  }
+  if (req.params.decision === "reject") {
+    setRating = null;
+    setUndergoingWork = true;
+    setFinishedNotPaid = false;
+  }
+
+  JobModel.findByIdAndUpdate(
+    req.params.jobId, {
+      $set: {
+        finishedNotPaid: setFinishedNotPaid,
+        finishedAndPaid: setFinishedAndPaid
+      }
+    },
     (err, jobFromDb) => {
       if (err) {
         console.log("Translation approval/rejection error: ", err);
@@ -238,41 +259,27 @@ router.patch("/submittedJob/:jobId/:decision/:rating", (req, res, next) => {
         });
         return;
       }
-      if (req.params.decision === "accept") {
-				jobFromDb.push({ rating: req.params.rating });
-        jobFromDb.set({
-					//temporary until paypal is fixed
-          finishedNotPaid: false,
-					finishedAndPaid: true
-        });
-				//go to payment
-      }
-      if (req.params.decision === "reject") {
-        jobFromDb.set({
-          undergoingWork: true,
-					finishedNotPaid: false
-        });
-      }
-
-      jobFromDb.save((err) => {
-        if (jobFromDb.errors) {
-          res.status(400).json({
-            errorMessage: "Save submit job failed",
-            validationErrors: jobFromDb.errors
-          });
-          return;
-        }
-        if (err) {
-          console.log("Job update error: ", err);
-          res.status(500).json({
-            errorMessage: "Job submission went wrong"
-          });
-          return;
-        }
-        res.status(200).json(jobFromDb);
-      });
-    }
-  )
+	}
+	);
+	UserModel.findByIdAndUpdate(
+		req.params.workerId, {
+		$push: {
+			rating: setRating
+		}
+		},
+		(err, userFromDb) => {
+			console.log("pushed rating: ", setRating)
+			console.log("new user:  ", userFromDb)
+			if (err) {
+				console.log("User rating error: ", err);
+				res.status(500).json({
+					errorMessage: "User rating went wrong"
+				});
+				return;
+			}
+	}
+	);
+	res.status(200).json({userFromDb, jobFromDb});
 });
 
 
@@ -319,20 +326,20 @@ router.patch("/payandcompletejob/:jobId", (req, res, next) => {
 //get single job
 router.get("/jobs/:jobId", (req, res, next) => {
   JobModel.findById(req.params.jobId)
-		.populate("owner")
-		.populate("worker")
-		.exec(
-    (err, jobFromDb) => {
-      if (err) {
-        console.log("Job details error ", err);
-        res.status(500).json({
-          errorMessage: "Job details went wrong"
-        });
-        return;
+    .populate("owner")
+    .populate("worker")
+    .exec(
+      (err, jobFromDb) => {
+        if (err) {
+          console.log("Job details error ", err);
+          res.status(500).json({
+            errorMessage: "Job details went wrong"
+          });
+          return;
+        }
+        res.status(200).json(jobFromDb);
       }
-      res.status(200).json(jobFromDb);
-    }
-  );
+    );
 });
 
 //delete single job
