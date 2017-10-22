@@ -233,6 +233,7 @@ router.patch("/submitJob/:jobId", (req, res, next) => {
 });
 //5&6: Job approved/rejected
 router.patch("/submittedJob/:jobId/:decision/:workerId/:rating", (req, res, next) => {
+	let responseArr = [];
   if (req.params.decision === "accept") {
     setFinishedNotPaid = false;
     setFinishedAndPaid = true;
@@ -250,6 +251,7 @@ router.patch("/submittedJob/:jobId/:decision/:workerId/:rating", (req, res, next
 					});
 					return;
 				}
+				responseArr.push(userFromDb);
 		}
 		);
   }
@@ -274,10 +276,12 @@ router.patch("/submittedJob/:jobId/:decision/:workerId/:rating", (req, res, next
         });
         return;
       }
+			responseArr.push(jobFromDb);
+
+			res.status(200).json(responseArr);
 	}
 	);
 
-	res.status(200).json({userFromDb, jobFromDb});
 });
 
 
