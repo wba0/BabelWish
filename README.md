@@ -1,5 +1,11 @@
 Babelwish
 ------
+##### Development setup:
+
+1. Clone [Server Repo]((https://https://github.com/wba0/Babelwish) (this one).
+2. Clone [Client Repo](https://https://github.com/wba0/Babelwish-client).
+3. Start MongoDB.
+4. Backend runs on localhost:2999, front end runs on localhost:3000.
 
 
 ##### Purpose:
@@ -14,4 +20,6 @@ What is the best way for animal welfare organizations to receive donations that 
 
 ### Created using [Angular2](https://angular.io), [Node.js](https://nodejs.org), [Express](https://expressjs.com/) and [MongoDB](https://www.mongodb.com/).
 
-### [Live link](https://babelwish.co)
+### [Live link](http://babelwish.co/)
+
+### MIT License

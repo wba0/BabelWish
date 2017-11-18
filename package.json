@@ -1,5 +1,9 @@
 {
-  "name": "server",
+	"name": "server",
+	"author": "William Bonney-Ache",
+  "version": "0.0.1",
+  "private": true,
+	"license": "MIT",
   "version": "0.0.0",
   "private": true,
   "scripts": {
