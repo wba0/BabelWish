@@ -2,10 +2,11 @@ Babelwish
 ------
 ##### Development setup:
 
-1. Clone [Server Repo]((https://https://github.com/wba0/Babelwish) (this one).
+1. Clone [Server Repo](https://https://github.com/wba0/Babelwish) (this one).
 2. Clone [Client Repo](https://https://github.com/wba0/Babelwish-client).
 3. Start MongoDB.
-4. Backend runs on localhost:2999, front end runs on localhost:3000.
+4. Backend runs on localhost:3000 (npm run reload), front end runs on localhost:4200 (ng serve).
+5. Use Angular CLI to build: ng build -prod --aot.
 
 
 ##### Purpose:
