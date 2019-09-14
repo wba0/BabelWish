@@ -66,7 +66,8 @@ const jobSchema = new Schema({
 		type: String
 	}
 }, {
-  timestamps: true
+  timestamps: true,
+  usePushEach: true
 });
 
 const JobModel = mongoose.model("Job", jobSchema);

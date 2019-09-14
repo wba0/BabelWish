@@ -42,7 +42,8 @@ const beneficiarySchema = new Schema({
 
 
 }, {
-  timestamps: true
+  timestamps: true,
+  usePushEach: true
 });
 
 const BeneficiaryModel = mongoose.model("Beneficiary", beneficiarySchema);
